@@ -194,17 +194,17 @@ def create_comparison_radar_chart(player1_data, player2_data, radar_config):
     ax.set_ylim(0, 100)
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels, size=9, color='white')
-    ax.set_rgrids([20, 40, 60, 80], color='gray')
+    ax.set_rgrids([20, 40, 60, 80], color='gray', linestyle='--')
     ax.set_title(radar_config['name'], size=16, weight='bold', y=1.1, color='white')
     ax.legend(loc='upper right', bbox_to_anchor=(1.4, 1.1), labelcolor='white')
 
     return fig
 
 
-# --- 5. STREAMLIT APP LAYOUT (UPDATED) ---
+# --- 5. STREAMLIT APP LAYOUT (UPDATED FOR CROSS-LEAGUE COMPARISON) ---
 
 st.title("⚽ Player Comparison Radar Tool")
-st.write("An interactive tool for visual player comparison using StatsBomb data.")
+st.write("An interactive tool for visual player comparison using StatsBomb data across different leagues.")
 
 with st.spinner('Loading all player data from StatsBomb API... Please wait.'):
     leagues, player_df = load_all_data(USERNAME, PASSWORD)
@@ -212,48 +212,108 @@ with st.spinner('Loading all player data from StatsBomb API... Please wait.'):
 if leagues is None or player_df is None:
     st.stop()
 
+# --- Helper function for sidebar filters ---
+def get_player_selection(player_num, full_df, league_data):
+    """Creates a set of filters in the sidebar for a single player."""
+    st.subheader(f"Player {player_num} Selection")
+    
+    # 1. League Selection
+    league_options = sorted(league_data.keys(), key=lambda x: league_data[x]['name'])
+    selected_league_id = st.selectbox(
+        f'Select League (Player {player_num})', 
+        options=league_options, 
+        format_func=lambda x: league_data[x]['name'],
+        key=f"league_{player_num}"
+    )
+
+    # 2. Season Selection
+    available_seasons = league_data[selected_league_id]['seasons']
+    season_options = sorted(available_seasons.keys(), key=lambda k: available_seasons[k], reverse=True)
+    selected_season_id = st.selectbox(
+        f'Select Season (Player {player_num})', 
+        options=season_options,
+        format_func=lambda x: available_seasons[x],
+        key=f"season_{player_num}"
+    )
+    
+    # Filter DataFrame for the selected league and season
+    filtered_df = full_df[(full_df['competition_id'] == selected_league_id) & (full_df['season_id'] == selected_season_id)].copy()
+    
+    if filtered_df.empty:
+        st.warning("No player data for this selection.")
+        return None, None, None
+
+    # 3. Team Selection
+    team_list = sorted(filtered_df['team_name'].unique())
+    team_list.insert(0, "All Teams")
+    selected_team = st.selectbox(
+        f'Select Team (Player {player_num})', 
+        options=team_list,
+        key=f"team_{player_num}"
+    )
+    
+    if selected_team != "All Teams":
+        player_pool_df = filtered_df[filtered_df['team_name'] == selected_team]
+    else:
+        player_pool_df = filtered_df
+        
+    if player_pool_df.empty:
+        st.write("No players to select.")
+        return None, None, None
+
+    # 4. Player Selection
+    player_list = sorted(player_pool_df['player_name'].unique())
+    # Set default for player 2 to be different if possible
+    default_index = 1 if player_num == 2 and len(player_list) > 1 else 0
+    selected_player_name = st.selectbox(
+        f'Select Player {player_num}', 
+        options=player_list,
+        key=f"player_{player_num}",
+        index=default_index
+    )
+    
+    if not selected_player_name:
+        return None, None, None
+
+    # Return the full data row for the selected player
+    player_data = filtered_df[filtered_df['player_name'] == selected_player_name].iloc[0]
+    return player_data, selected_league_id, selected_season_id
+
+
+# --- Sidebar with dual filters ---
 with st.sidebar:
     st.header("📊 Filters")
-    # All the filter logic from before remains the same
-    selected_league_id = st.selectbox('Select League', options=sorted(leagues.keys()), format_func=lambda x: f"{leagues[x]['name']} (ID: {x})")
-    available_seasons = leagues[selected_league_id]['seasons']
-    selected_season_id = st.selectbox('Select Season', options=sorted(available_seasons.keys(), key=lambda k: available_seasons[k], reverse=True), format_func=lambda x: f"{available_seasons[x]} (ID: {x})")
     
-    league_season_df = player_df[(player_df['competition_id'] == selected_league_id) & (player_df['season_id'] == selected_season_id)].sort_values('player_name')
+    player1_data, p1_league_id, p1_season_id = get_player_selection(1, player_df, leagues)
+    st.divider()
+    player2_data, p2_league_id, p2_season_id = get_player_selection(2, player_df, leagues)
 
-    if league_season_df.empty:
-        st.warning("No player data found for this league/season.")
-        player_df_final = pd.DataFrame()
-    else:
-        team_list = sorted(league_season_df['team_name'].unique())
-        team_list.insert(0, "All Teams")
-        selected_team = st.selectbox('Select Team', options=team_list)
-        
-        if selected_team != "All Teams":
-            player_df_final = league_season_df[league_season_df['team_name'] == selected_team]
-        else:
-            player_df_final = league_season_df
-    
-    if player_df_final.empty:
-        st.write("No players to select.")
-        player1_name = None
-        player2_name = None
-    else:
-        player_list = player_df_final['player_name'].unique()
-        player1_name = st.selectbox('Select Player 1', options=player_list)
-        player2_name = st.selectbox('Select Player 2', options=player_list, index=1 if len(player_list) > 1 else 0)
 
 # -- Main content area for charts --
-if player1_name and player2_name:
-    if player1_name == player2_name:
-        st.error("Please select two different players for comparison.")
+if player1_data is not None and player2_data is not None:
+    player1_name = player1_data['player_name']
+    player2_name = player2_data['player_name']
+    
+    # Check if the exact same player instance is selected
+    if player1_data.equals(player2_data):
+        st.error("Please select two different players or seasons for comparison.")
     else:
         st.header(f"Comparison: {player1_name} vs. {player2_name}")
-        st.write(f"**Competition:** {leagues[selected_league_id]['name']} | **Season:** {leagues[selected_league_id]['seasons'][selected_season_id]}")
+        
+        # Display player context in columns
+        col_info1, col_info2 = st.columns(2)
+        with col_info1:
+            st.markdown(f"**{player1_name}**")
+            st.markdown(f"League: **{leagues[p1_league_id]['name']}**")
+            st.markdown(f"Season: **{leagues[p1_league_id]['seasons'][p1_season_id]}**")
+        with col_info2:
+            st.markdown(f"**{player2_name}**")
+            st.markdown(f"League: **{leagues[p2_league_id]['name']}**")
+            st.markdown(f"Season: **{leagues[p2_league_id]['seasons'][p2_season_id]}**")
 
-        player1_data = league_season_df[league_season_df['player_name'] == player1_name].iloc[0]
-        player2_data = league_season_df[league_season_df['player_name'] == player2_name].iloc[0]
+        st.markdown("---")
 
+        # Display radar charts
         col1, col2, col3 = st.columns(3)
         cols = [col1, col2, col3, col1, col2, col3]
         
@@ -265,17 +325,19 @@ if player1_name and player2_name:
                 fig = create_comparison_radar_chart(player1_data, player2_data, config)
                 st.pyplot(fig, use_container_width=True)
 
-                # *** NEW: Create and offer the Word doc for download ***
+                # Create and offer the Word doc for download
                 doc_stream = create_word_doc_stream(player1_name, player2_name, config['name'], fig)
                 st.download_button(
                     label="Download as .docx",
                     data=doc_stream,
                     file_name=f"{config['name']}_{player1_name}_vs_{player2_name}.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    key=f"download_{i}" # Use a unique key for each button
+                    key=f"download_{i}" # Unique key for each button
                 )
 else:
-    st.info("Select a league, season, and two players from the sidebar to see the comparison.")
+    st.info("Select two players from the sidebar to see the comparison.")
+    
+    
     
     
     
