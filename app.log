@@ -1,0 +1,73 @@
+nohup: ignoring input
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  URL: http://0.0.0.0:8501
+
+2026-01-02 13:43:24.865 Script compilation error
+Traceback (most recent call last):
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 573, in _run_script
+    code = self._script_cache.get_bytecode(script_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_cache.py", line 68, in get_bytecode
+    with open_python_file(script_path) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/source_util.py", line 54, in open_python_file
+    return tokenize.open(filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tokenize.py", line 396, in open
+    buffer = _builtin_open(filename, 'rb')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspaces/stjohnstoneanalysis/multipositionalradar_clone_two_tier_no_open_data.py'
+2026-01-02 13:43:24.927 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-01-02 13:43:32.773 Script compilation error
+Traceback (most recent call last):
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 573, in _run_script
+    code = self._script_cache.get_bytecode(script_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_cache.py", line 68, in get_bytecode
+    with open_python_file(script_path) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/source_util.py", line 54, in open_python_file
+    return tokenize.open(filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tokenize.py", line 396, in open
+    buffer = _builtin_open(filename, 'rb')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspaces/stjohnstoneanalysis/multipositionalradar_clone_two_tier_no_open_data.py'
+2026-01-02 13:43:32.783 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-01-02 13:51:12.795 Script compilation error
+Traceback (most recent call last):
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 573, in _run_script
+    code = self._script_cache.get_bytecode(script_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_cache.py", line 68, in get_bytecode
+    with open_python_file(script_path) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/source_util.py", line 54, in open_python_file
+    return tokenize.open(filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tokenize.py", line 396, in open
+    buffer = _builtin_open(filename, 'rb')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspaces/stjohnstoneanalysis/multipositionalradar_clone_two_tier_no_open_data.py'
+2026-01-02 13:51:12.798 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-01-02 13:53:39.651 Script compilation error
+Traceback (most recent call last):
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 573, in _run_script
+    code = self._script_cache.get_bytecode(script_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_cache.py", line 68, in get_bytecode
+    with open_python_file(script_path) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stjohnstoneanalysis/.venv/lib/python3.11/site-packages/streamlit/source_util.py", line 54, in open_python_file
+    return tokenize.open(filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tokenize.py", line 396, in open
+    buffer = _builtin_open(filename, 'rb')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspaces/stjohnstoneanalysis/multipositionalradar_clone_two_tier_no_open_data.py'
+2026-01-02 13:53:39.653 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
